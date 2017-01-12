@@ -115,12 +115,14 @@ public class SimonScreenSammy extends ClickableScreen implements Runnable {
 		
 		Color[] colors = {Color.red, Color.blue,Color.green, Color.pink, Color.yellow, };
 		String[] names = {"Red", "Blue", "Pink", "Green", "Yellow"};
+		int[] x={400,302,265,360};
+		int [] y={400,302,265,360};
 		int numberOfButtons =6;
 		for(int i =0; i< numberOfButtons;i++){
 			final ButtonInterfaceSammy b = getAButton();
 			b.setColor(colors[i]);
-		    setX(5);
-		    setY(6);
+		    setX(x[i]);
+		    setY(y[i]);
 		    
 		    b.setAction(new Action(){
 		    	public void act(){
