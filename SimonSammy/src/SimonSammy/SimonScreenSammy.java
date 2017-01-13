@@ -4,11 +4,13 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import gui.ClickableScreen;
-import gui.Components.Action;
-import gui.Components.Button;
-import gui.Components.TextLabel;
-import gui.Components.Visible;
+import gui6.ClickableScreen;
+import gui6.components.Action;
+import gui6.components.TextLabel;
+import gui6.components.Visible;
+import partner.Button;
+import partner.Move;
+import partner.Progress;
 
 public class SimonScreenSammy extends ClickableScreen implements Runnable {
 
@@ -24,22 +26,22 @@ public class SimonScreenSammy extends ClickableScreen implements Runnable {
 
 	public SimonScreenSammy(int width, int height) {
 		super(width, height);
+
+		move = new ArrayList<MoveInterfaceSammy>();
+
 		Thread app = new Thread(this);
 		app.start();
 	}
 
 	@Override
 	public void run() {
-		
-		    textLabel.setText("");
-		    nextRound();
-		
-
+		textLabel.setText("");
+		nextRound();
 	}
 
 	private void nextRound() {
 		acceptingInput = false;
-		roundNumber ++;
+		roundNumber++;
 		progress.setRound(roundNumber);
 		move.add(randomMove());
 		progress.setSequenceLength(move.size());
@@ -50,48 +52,46 @@ public class SimonScreenSammy extends ClickableScreen implements Runnable {
 		textLabel.setText("");
 		acceptingInput = true;
 		sequenceIndex = 0;
-		
 	}
 
 	private void showSequence() {
 		ButtonInterfaceSammy b = null;
-		for(MoveInterfaceSammy m: move){
-			if(b!=null)b.dim();
+		for (MoveInterfaceSammy m : move) {
+			if (b != null)
+				b.dim();
 			b = m.getButton();
 			b.highlight();
 			try {
-				Thread.sleep((long)(2000*(2.0/(roundNumber+2))));
+				Thread.sleep((long) (2000 * (2.0 / (roundNumber + 2))));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			b.dim();
 		}
-		b.dim();
-		
 	}
 
 	private void changeText(String string) {
-		try{
+		try {
 			textLabel.setText(string);
-			Thread.sleep(1000);
-		}catch(Exception e){
+			Thread.sleep(2000);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public void initAllObjects(ArrayList<Visible> viewObjects) {
+	public void initAllObjects(List<Visible> viewObjects) {
 		addButtons(viewObjects);
-		progress = getProgress();
-		textLabel = new TextLabel(130, 230, 300, 40, "Let's play Simon!");
+
 		move = new ArrayList<MoveInterfaceSammy>();
-		// add 2 moves to start
+
 		lastSelectedButton = -1;
 		move.add(randomMove());
-		move.add(randomMove());
 		roundNumber = 0;
-		viewObjects.add(progress);
-		viewObjects.add(textLabel);
+		viewObjects.add(getProgress());
 
+		textLabel = new TextLabel(100, 100, 300, 40, "Let's play Simon!");
+		viewObjects.add(textLabel);
 	}
 
 	private MoveInterfaceSammy randomMove() {
@@ -99,89 +99,73 @@ public class SimonScreenSammy extends ClickableScreen implements Runnable {
 	}
 
 	private MoveInterfaceSammy getMove(ButtonInterfaceSammy b) {
-		// TODO Auto-generated method stub
-		return null;
+		MoveInterfaceSammy move = new Move(b);
+		return move;
 	}
 
 	private ProgressInterfaceSammy getProgress() {
-		/**
-		 * Placeholder until partner finishes implementation of
-		 * ProgressInterface
-		 */
-		return null;
+		if (progress == null) {
+			progress = new Progress(100, 200);
+		}
+
+		return progress;
 	}
 
 	public void addButtons(List<Visible> viewObjects) {
-		
-		Color[] colors = {Color.red, Color.blue,Color.green, Color.pink, Color.yellow, };
-		String[] names = {"Red", "Blue", "Pink", "Green", "Yellow"};
-		int[] x={400,302,265,360};
-		int [] y={400,302,265,360};
-		int numberOfButtons =6;
-		for(int i =0; i< numberOfButtons;i++){
-			final ButtonInterfaceSammy b = getAButton();
-			b.setColor(colors[i]);
-		    setX(x[i]);
-		    setY(y[i]);
-		    
-		    b.setAction(new Action(){
-		    	public void act(){
-		    		
-		    		Thread blink = new Thread(new Runnable(){
+		Color[] colors = { Color.red, Color.blue, Color.green, Color.pink, Color.yellow, Color.BLACK };
+		String[] names = { "Red", "Blue", "Pink", "Green", "Yellow", "Black" };
 
-		    			public void run(){
-		    			
-		    				b.highlight();
-		    				try {
+		int[] x = { 350, 325, 300, 275, 250, 225 };
+		int numberOfButtons = 6;
+		button = new Button[6];
+		System.out.println("PRINTING BUTTONS");
+		for (int i = 0; i < numberOfButtons; i++) {
+			final ButtonInterfaceSammy b = getAButton(x[i], 100);
+			b.setColor(colors[i]);
+
+			b.setAction(new Action() {
+				public void act() {
+
+					Thread blink = new Thread(new Runnable() {
+
+						public void run() {
+							b.highlight();
+							try {
 								Thread.sleep(800);
-								
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
 							b.dim();
-							
-		    			}});
+						}
+					});
+					blink.start();
 
-		    		if(acceptingInput && move.get(sequenceIndex).getButton() == b){
+					if (acceptingInput && move.get(sequenceIndex).getButton() == b) {
 						sequenceIndex++;
-					}else if(acceptingInput){
+					} else if (acceptingInput) {
 						gameOver();
 						return;
 					}
-					if(sequenceIndex == move.size()){
+					if (sequenceIndex == move.size()) {
 						Thread nextRound = new Thread(SimonScreenSammy.this);
 						nextRound.start();
 					}
-		    	}
-		    });
-		    button[i]=b;
-		    viewObjects.add(button[i]);
-		    
+				}
+			});
+
+			button[i] = b;
+			viewObjects.add(b);
 		}
-		
-		
-		
-		
 	}
 
 	protected void gameOver() {
 		progress.gameOver();
-		
+
 	}
 
-	private void setY(int i) {
+	private ButtonInterfaceSammy getAButton(int x, int y) {
 		// TODO Auto-generated method stub
-		
-	}
-
-	private void setX(int i) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private ButtonInterfaceSammy getAButton() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Button(x, y);
 	}
 
 }

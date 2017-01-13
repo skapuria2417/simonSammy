@@ -1,6 +1,6 @@
 package SimonSammy;
 
-import gui.Components.Visible;
+import gui6.components.Visible;
 
 public interface ProgressInterfaceSammy extends Visible {
 
