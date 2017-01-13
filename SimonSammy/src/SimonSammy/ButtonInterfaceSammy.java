@@ -15,4 +15,6 @@ public interface ButtonInterfaceSammy extends Clickable {
 	public void highlight();
 
 	public void dim();
+
+	void setName(String name);
 }

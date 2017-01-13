@@ -65,4 +65,14 @@ public class Button extends Component implements ButtonInterfaceSammy {
 
 	}
 
+	private String name;
+
+	public void setName(String s) {
+		this.name = s;
+	}
+
+	public String toString() {
+		return name;
+	}
+
 }

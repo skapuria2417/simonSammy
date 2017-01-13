@@ -73,7 +73,7 @@ public class SimonScreenSammy extends ClickableScreen implements Runnable {
 	private void changeText(String string) {
 		try {
 			textLabel.setText(string);
-			Thread.sleep(2000);
+			Thread.sleep(3000);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -95,12 +95,12 @@ public class SimonScreenSammy extends ClickableScreen implements Runnable {
 	}
 
 	private MoveInterfaceSammy randomMove() {
-		return getMove(button[(int) (Math.random() * button.length)]);
-	}
-
-	private MoveInterfaceSammy getMove(ButtonInterfaceSammy b) {
-		MoveInterfaceSammy move = new Move(b);
-		return move;
+		int select = (int) (Math.random() * button.length);
+		while (select == lastSelectedButton) {
+			select = (int) (Math.random() * button.length);
+		}
+		lastSelectedButton = select;
+		return new Move(button[select]);
 	}
 
 	private ProgressInterfaceSammy getProgress() {
@@ -122,6 +122,7 @@ public class SimonScreenSammy extends ClickableScreen implements Runnable {
 		for (int i = 0; i < numberOfButtons; i++) {
 			final ButtonInterfaceSammy b = getAButton(x[i], 100);
 			b.setColor(colors[i]);
+			b.setName(names[i]);
 
 			b.setAction(new Action() {
 				public void act() {
